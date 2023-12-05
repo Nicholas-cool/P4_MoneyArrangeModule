@@ -1,0 +1,46 @@
+/*  LayUI Layer样式  */
+
+/* layer总体样式 */
+.layui-layer {
+    background-color: #2B2B2B;
+}
+
+.layui-layer-title {
+    border-bottom: 1px solid #2B2B2B;
+    color: #eff;
+}
+
+/* layer的右上角关闭按钮样式 */
+.layui-layer-ico {
+    padding-top: 2px;
+}
+
+.layui-layer-setwin .layui-layer-close1 {
+    background-position: -180px -31.5px;
+    cursor: pointer;
+}
+
+.layui-layer-setwin a {
+    width: 30px;
+    height: 31px;
+    margin-top: -7px;
+}
+
+/* select的下拉框样式 */
+.layui-form-select dl {
+    max-width: 100%;
+    color: black;
+    margin-bottom: 0;
+    /*max-height: 260px;*/
+}
+
+/*.layui-form-select dd {*/
+/*    margin-bottom: 0;*/
+/*}*/
+
+/* select框字体样式 */
+.layui-disabled, .layui-disabled:hover {
+    color: #000 !important;
+    cursor: not-allowed !important;
+    background-color: #ccc;
+}

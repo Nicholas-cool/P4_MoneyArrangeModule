@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>资金管理模块</title>
+
+    <!-- 导入需要用的插件 -->
+    {% include 'common/head_import.html' %}
+
+    <!-- 导入外部文件 -->
+    <link rel="stylesheet" href="/static/custome_css/layer_style.css">
+    <link rel="stylesheet" href="/static/custome_css/layui_table_style.css">
+    <link rel="stylesheet" href="/static/custome_css/layui_form_style.css">
+
+    {% include 'common/custome_functions/date_functions.html' %}
+    {% include 'common/custome_functions/get_select_list_functions.html' %}
+    {% include 'common/custome_functions/decimal_functions.html' %}
+
+    {% include '04_money_arrange_module/04_money_record_auto_complete_data.html' %}
+    {% include '04_money_arrange_module/Layer01_AddMoneyRecordLayer.html' %}
+    {% include '04_money_arrange_module/Layer02_TransferMoneyLayer.html' %}
+    {% include '04_money_arrange_module/Layer03_MoneyLineChartLayer.html' %}
+    {% include '04_money_arrange_module/Layer04_MoneyCategoryChartLayer.html' %}
+    {% include '04_money_arrange_module/Layer05_MoneyHistoryLayer.html' %}
+    {% include '04_money_arrange_module/JS01_load_money_page.html' %}
+</head>
+
+<body onhashchange="nav_show()">
+<!-- Main Top -->
+<div style="position: absolute; left: 0; top: 0; height: 5%; width: 100%;">
+    <div style="width: 100%; height: 100%; display:inline-block; position: absolute; z-index: 2000;
+            right: 0; top: 0; background-color: {{ theme.main_top.bgcolor }};">
+    </div>
+</div>
+
+<!-- Main Body -->
+<div style="position: absolute; left: 0; top: 5%; height: 95%; font-size: 14px; overflow-y: auto;
+        width: 100%; background-color: {{ theme.main_body.bgcolor }}; color: {{ theme.main_body.fontcolor }};">
+    <!-- Money Position Card -->
+    <div id="money_position_card"
+         style="width: 18%; height: 65%; background-color: #2C3E50; border-radius: 10px; padding: 20px 10px 10px;
+         margin-left: 1%; margin-top: 1%; border: 2px solid #abb; font-size: 16px; color: #dee; font-family: 华文楷体,serif;
+         position: relative; overflow-y: scroll;">
+        <div id="money_position_circulating"></div>
+        <div style="font-weight: bold; background-color: #cc8014; border-radius: 2px; text-align: center;">
+            流动总计：<span id="all_circulating_money_span">NoData</span>
+        </div>
+
+        <div style="background-color: #2b2b2b; border-radius: 20px; opacity: 0.8;">
+            <hr><div id="money_position_not_circulating"></div>
+            <div style="font-weight: bold; background-color: #cc8014; border-radius: 2px; text-align: center;">
+                总计（全）：<span id="all_all_money_span">NoData</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ToolBar Card -->
+    <div id="toolbar_card"
+         style="width: 18%; height: 28%; background-color: #2B2B2B; border-radius: 10px; padding: 10px; padding-top: 20px;
+         margin-left: 1%; margin-top: 1%; border: 2px solid #abb; font-size: 16px; color: #dee; font-family: 黑体,serif;
+         position: relative;">
+        <button type="button" class="layui-btn" style="margin-left: 10%; width: 80%; background-color: #336A9D;"
+                onclick="openMoneyHistoryLayer()">每日资金余量
+        </button>
+        <button type="button" class="layui-btn" style="margin-left: 10%; width: 80%; margin-top: 15px;"
+                onclick="openMoneyLineChartLayer()">花销折线统计图
+        </button>
+        <button type="button" class="layui-btn" style="margin-left: 10%; width: 80%; margin-top: 15px;"
+                onclick="openMoneyCategoryChartLayer()">花销分类饼状图
+        </button>
+    </div>
+
+    <!-- Money Record Form Card -->
+    <div id="money_record_form_card"
+         style="width: 79%; height: 95%; border-radius: 10px; padding: 20px 10px 10px;
+         left: 20%; top: 2%; border: 2px solid #abb; font-size: 16px; color: #dee; font-family: 华文楷体,serif;
+         position: absolute;">
+        <!-- 数据表格搜索框 -->
+        <div style="margin-top: 0; font-family: 黑体,serif;">
+            <label style="color: {{ theme.main_top.fontcolor }}; margin-left: 25px;">搜索：</label>
+            <div class="layui-inline" style="width: 41%;">
+                <input class="layui-input" id="money_record_search_input" autocomplete="off"
+                       style="background-color: #eee;">
+            </div>
+            <div class="layui-inline" style="width: 10%;">
+                <select class="layui-input" id="money_record_search_select" autocomplete="off"
+                        style="background-color: #eee;">
+                    <option value="all">全部</option>
+                </select>
+            </div>
+            <button type="button" class="layui-btn" onclick="search_money_record_form()">Search</button>
+            <button type="button" class="layui-btn" style="margin-left:0;" onclick="reload_money_record_form()">Reload
+            </button>
+            <button type="button" class="layui-btn" style="margin-left:0;" onclick="openAddMoneyRecordLayer()">Add+
+            </button>
+            <button type="button" class="layui-btn" style="margin-left:0; background-color: #CC8014;"
+                    onclick="openTransferMoneyLayer()">Transfer+
+            </button>
+
+            <!-- 高级检索实现 -->
+            <div class="layui-inline" style="width: 100%; margin-left: 25px; margin-top: 10px;">
+                <label style="color: {{ theme.main_top.fontcolor }};">日期：</label>
+                <input type="text" autocomplete="off" id="money_record_search_start_date"
+                       class="layui-input" style="width: 13%; display: inline-block; background-color: #ddd;">
+                <label style="color: {{ theme.main_top.fontcolor }};"> - </label>
+                <input type="text" autocomplete="off" id="money_record_search_end_date"
+                       class="layui-input" style="width: 13%; display: inline-block; background-color: #ddd;">
+
+                <label style="color: {{ theme.main_top.fontcolor }}; margin-left: 8px;">收支：</label>
+                <select class="layui-input" id="money_record_search_inout_select" autocomplete="off"
+                        onchange="money_record_search_inout_select_change()"
+                        style="background-color: #eee; width: 10%; display: inline-block; margin-left: 0;">
+                    <option value="all">全部</option>
+                    <option value="out">支出</option>
+                    <option value="in">收入</option>
+                </select>
+
+                <label style="color: {{ theme.main_top.fontcolor }}; margin-left: 8px;">类型：</label>
+                <select class="layui-input" id="money_record_search_category_select" autocomplete="off"
+                        style="background-color: #eee; width: 13%; display: inline-block; margin-left: 0;">
+                    <option value="all">全部</option>
+                </select>
+
+                <label style="color: {{ theme.main_top.fontcolor }}; margin-left: 8px;">来源：</label>
+                <select class="layui-input" id="money_record_search_source_select" autocomplete="off"
+                        style="background-color: #eee; width: 13%; display: inline-block; margin-left: 0;">
+                    <option value="all">全部</option>
+                </select>
+            </div>
+        </div>
+
+        <!--  money_record 数据表格  -->
+        <div style="width:98%; margin:10px 10px 0; height: max-content;">
+            <table id="money_record_form" lay-filter="money_record_form" style="width:100%;"></table>
+        </div>
+    </div>
+</div>
+</body>
+
+<!-- money_record 数据表格高级检索功能 -->
+<script>
+    // 根据 “收支” 下拉框值的变化，更新 “类型” 中相应的选项
+    function money_record_search_inout_select_change(){
+        let select_data = $('#money_record_search_inout_select').val();
+        common_get_select_list('money_record_search_category_select', '04_money_arrange',
+            select_data + 'come_category', 'all', '全部');
+    }
+
+    // 监视高级搜索 “日期” 输入框的变化，并对应调整另一日期
+    function change_search_date(start_or_end){
+        let start_date = $('#money_record_search_start_date').val();
+        let end_date = $('#money_record_search_end_date').val();
+
+        if (start_date.length < 1 || end_date.length < 1){
+            return
+        }
+
+        if (start_or_end === 'start'){    // 根据当前选择的开始时间，调整结束时间
+            if (end_date < start_date){
+                $('#money_record_search_end_date').val(start_date);
+            }
+        } else if (start_or_end === 'end'){    // 根据当前选择的结束时间，调整开始时间
+            if (end_date < start_date){
+                $('#money_record_search_start_date').val(end_date);
+            }
+        }
+    }
+
+    // 加载 “来源” 下拉框的选项
+    function money_record_search_source_select_load(){
+        $.ajax({
+            url:{% url 'e_get_money_positions' %},
+            type: 'GET',
+            async: false,
+            data: {},
+            success: function (data_dic) {
+                // 清空原有option
+                document.getElementById("money_record_search_source_select").innerHTML =
+                    '<option value="all">全部</option>';
+
+                // 遍历数据data_dic，逐项添加入select列表
+                $.each(data_dic, function (i, item) {
+                    if (item['hidden'] !== 'all'){
+                        $("#money_record_search_source_select").append(
+                            "<option value= " + i + " >" + item.name + "</option>");
+                    }
+                });
+            }
+        })
+    }
+    money_record_search_source_select_load();
+
+    // 重载 money_record数据表格 回调函数
+    function reload_money_record_form(){
+        money_record_table.reload({
+            url: '../e_get_money_record_form',
+            where: {}
+            , page: {
+                // curr: $('.layui-laypage-skip input')[0].value
+            }
+        });
+    }
+
+    // 搜索 money_record数据表格 回调函数
+    function search_money_record_form(){
+        // 获取前端参数
+        let search_text = document.getElementById('money_record_search_input').value;
+        let search_start_date = document.getElementById('money_record_search_start_date').value;
+        let search_end_date = document.getElementById('money_record_search_end_date').value;
+        let search_inout = document.getElementById('money_record_search_inout_select').value;
+        let search_category = document.getElementById('money_record_search_category_select').value;
+        let search_position = document.getElementById('money_record_search_source_select').value;
+
+        // 重新加载数据表格
+        money_record_table.reload({
+            url: '../e_search_money_record_form',
+            where: {  // 设定异步数据接口的额外参数，任意设
+                search_text: search_text,
+                search_start_date: search_start_date,
+                search_end_date: search_end_date,
+                search_inout: search_inout,
+                search_category: search_category,
+                search_position: search_position,
+            }
+            , page: {
+                curr: '1'
+            }
+        });
+    }
+</script>
+
+<!-- 日期选择器渲染 -->
+<script>
+    layui.laydate.render({
+        elem: '#add_money_record_layer_date'
+    });
+
+    layui.laydate.render({
+        elem: '#transfer_money_layer_date'
+    });
+
+    layui.laydate.render({
+        elem: '#money_category_chart_layer_start_date'
+    });
+
+    layui.laydate.render({
+        elem: '#money_category_chart_layer_end_date'
+    });
+
+    layui.laydate.render({
+        elem: '#money_record_search_start_date'
+        , done: function (value, date, endDate){
+            change_search_date('start');
+        }
+    });
+
+    layui.laydate.render({
+        elem: '#money_record_search_end_date'
+        , done: function (value, date, endDate){
+            change_search_date('end');
+        }
+    });
+</script>
+
+<!-- PSS导航属性调整 -->
+<style>
+    .pssMenuClassBtn {
+        margin-top: 4px;
+        margin-bottom: 6px;
+        margin-left: 19px;
+    }
+</style>

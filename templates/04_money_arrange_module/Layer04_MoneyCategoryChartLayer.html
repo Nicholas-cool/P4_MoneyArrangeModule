@@ -1,0 +1,213 @@
+<!-- Layer04 MoneyCategoryChartLayer -->
+{% include 'common/custome_functions/decimal_functions.html' %}
+
+<div id="money_category_chart_layer"
+     style="display:none; padding: 15px 15px 0px;line-height: 35px; background-color: #393D49; color: #fff;
+     font-weight: 300; font-size:14px;">
+        <form class="layui-form">
+            <div style="width: 42%; margin: 1%; display: inline-block; position:relative;" class="layui-form-item">
+                <label>起始日期：</label>
+                <input type="text" autocomplete="off" id="money_category_chart_layer_start_date"
+                       class="layui-input" style="width: 80%; display: inline-block; position:absolute; left:21%;
+                       background-color: #eee;">
+            </div>
+            <div style="width: 42%; margin: 1%; display: inline-block; position:relative;" class="layui-form-item">
+                <label>终止日期：</label>
+                <input type="text" autocomplete="off" id="money_category_chart_layer_end_date"
+                       class="layui-input" style="width: 80%; display: inline-block; position:absolute; left:21%;
+               background-color: #eee;">
+            </div>
+            <button type="button" class="layui-btn" style="margin-left: 1%; width: 80px;"
+                    onclick="click_date_span_filter()">筛选
+            </button>
+            <div style="width: 42%; margin: 1%; display: inline-block; position:relative;" class="layui-form-item">
+                <label>支出总计：</label>
+                <input type="text" autocomplete="off" id="money_category_chart_layer_outcome_input"
+                       class="layui-input" style="width: 80%; display: inline-block; position:absolute; left:21%;
+                       background-color: #aaa;" disabled>
+            </div>
+            <div style="width: 42%; margin: 1%; display: inline-block; position:relative;" class="layui-form-item">
+                <label>收入总计：</label>
+                <input type="text" autocomplete="off" id="money_category_chart_layer_income_input"
+                       class="layui-input" style="width: 80%; display: inline-block; position:absolute; left:21%;
+                       background-color: #aaa;" disabled>
+            </div>
+    </form>
+    <div id="chart_money_statistics_category_pie_chart"
+         style="height: 420px; width: 480px; display: inline-block; margin-top: 20px;"></div>
+    <div id="chart_money_statistics_category_pie_chart_income"
+         style="height: 420px; width: 480px; display: inline-block; margin-top: 20px;"></div>
+</div>
+
+<script>
+    function openMoneyCategoryChartLayer() {
+        refresh_MoneyCategoryChartLayer();  // 刷新图展示
+        layer.open({
+            type: 1
+            , title: 'Money Category Chart'  // 标题栏,false为不显示
+            , area: '1000px;'
+            , shade: 0.8
+            , id: 'LAY_layuipro' // 设定一个id，防止重复弹出
+            , moveType: 0 // 拖拽模式，0或者1
+            , content: $("#money_category_chart_layer")
+            , success: function (layero) {
+            }
+        });
+    }
+
+    function refresh_MoneyCategoryChartLayer(){
+        click_date_span_filter();  // 只需要根据当前日期范围更新数据图即可
+    }
+
+    // 筛选选定日期范围内的统计图
+    function click_date_span_filter(){
+        let start_date = document.getElementById('money_category_chart_layer_start_date').value;
+        let end_date = document.getElementById('money_category_chart_layer_end_date').value;
+
+        refresh_mychart03('given_span', start_date + '#' + end_date);
+        refresh_mychart04('given_span', start_date + '#' + end_date);
+    }
+</script>
+
+<!-- Echart图表渲染 -->
+<script>
+    /* ---------------MyChart03------------------ */
+    // 基于准备好的dom，初始化echarts实例
+    let myChart03 = echarts.init(document.getElementById('chart_money_statistics_category_pie_chart'), 'dark');
+    // 指定图表的配置项和数据
+    let option03 = {
+        backgroundColor: '#393D49',
+        title: {
+            text: '支出分类统计饼图',
+            left: '10%',
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: '<b>{b}</b><br/>' + '{c}元 ({d}%)'
+        },
+        series: [
+            {
+                // name: 'Access From',
+                type: 'pie',
+                radius: '70%',
+                center: ['50%', '55%'],
+                data: [
+                    {value: 1048, name: 'Search Engine'},
+                    {value: 735, name: 'Direct'},
+                    {value: 580, name: 'Email'},
+                    {value: 484, name: 'Union Ads'},
+                ],
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    },
+                    focus: 'self',
+                },
+            }
+        ]
+    };
+    option03 && myChart03.setOption(option03);
+
+    /* ---------------MyChart03------------------ */
+    // 基于准备好的dom，初始化echarts实例
+    let myChart04 = echarts.init(document.getElementById('chart_money_statistics_category_pie_chart_income'), 'dark');
+    // 指定图表的配置项和数据
+    let option04 = {
+        backgroundColor: '#393D49',
+        title: {
+            text: '收入分类统计饼图',
+            left: '10%',
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: '<b>{b}</b><br/>' + '{c}元 ({d}%)'
+        },
+        series: [
+            {
+                // name: 'Access From',
+                type: 'pie',
+                radius: '70%',
+                center: ['50%', '55%'],
+                data: [
+                    {value: 1048, name: 'Search Engine'},
+                    {value: 735, name: 'Direct'},
+                    {value: 580, name: 'Email'},
+                    {value: 484, name: 'Union Ads'},
+                    {value: 300, name: 'Video Ads'}
+                ],
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    },
+                    focus: 'self',
+                },
+            }
+        ]
+    };
+    option04 && myChart04.setOption(option04);
+
+    // 更新 mychart03 图像
+    function refresh_mychart03(time_scale, time_data) {
+        $.ajax({
+            url:{% url 'e_money_get_chart03_data' %},
+            async: false,
+            type: 'GET',
+            data: {
+                'time_scale': time_scale,
+                'time_data': time_data,
+                'inout_type': 'out',
+            },
+            success: function (chart_data_list) {
+                option03.series[0].data = chart_data_list;
+                myChart03.setOption(option03);
+
+                // 更新“支出总计”输入框
+                let outcome_amount_all = 0;
+                for(let idx in chart_data_list){
+                    // console.log(chart_data_list[idx].value);
+                    outcome_amount_all += parseFloat(chart_data_list[idx].value);
+                }
+                document.getElementById('money_category_chart_layer_outcome_input').value =
+                    changeTwoDecimal_f(outcome_amount_all) + '元';
+           }
+        })
+    }
+
+    // 更新 mychart04 图像
+    function refresh_mychart04(time_scale, time_data) {
+        $.ajax({
+            url:{% url 'e_money_get_chart03_data' %},
+            async: false,
+            type: 'GET',
+            data: {
+                'time_scale': time_scale,
+                'time_data': time_data,
+                'inout_type': 'in',
+            },
+            success: function (chart_data_list) {
+                option04.series[0].data = chart_data_list;
+                myChart04.setOption(option04);
+
+                // 更新“收入总计”输入框
+                let income_amount_all = 0;
+                for (let idx in chart_data_list) {
+                    // console.log(chart_data_list[idx].value);
+                    income_amount_all += parseFloat(chart_data_list[idx].value);
+                }
+                document.getElementById('money_category_chart_layer_income_input').value =
+                    changeTwoDecimal_f(income_amount_all) + '元';
+           }
+        })
+    }
+
+    info_temp = get_month_start_end_date();  // 获取本月开始和结束时间
+    refresh_mychart03('given_span', info_temp['start'] + '#' + info_temp['end']);
+    refresh_mychart04('given_span', info_temp['start'] + '#' + info_temp['end']);
+
+    document.getElementById('money_category_chart_layer_start_date').value = info_temp['start'];
+    document.getElementById('money_category_chart_layer_end_date').value = info_temp['end'];
+</script>

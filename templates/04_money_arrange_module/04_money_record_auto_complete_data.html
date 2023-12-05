@@ -1,0 +1,47 @@
+<script>
+    function money_record_auto_complete_get(money_record_name){
+        /*  可选项（2023-11-07更新）
+            in —— 生活费, 接单收入, 微信红包, 利息, 研究生补贴, 退款, 活动红包
+            out —— 日常餐饮, 理发造型, 日用品购买, 会员套餐, 水电话房费, 交通费用, 家用, 医疗, 旅行朋友, 学杂费用
+            wechat, wechat_sub, alipay, ant_credit_pay, icbc, boc, student_card, ant_wish, jd_credit, meituan
+        */
+
+        let money_record_name_dic = {  // 自动填充规则字典，靠前的条目优先
+            // 格式：['in（收入）/out（支出）', '类型', '资金位置', '金额']
+
+            '罗森': ['out', '日常餐饮', 'wechat', ''],
+            '麦当劳': ['out', '日常餐饮', 'wechat', ''],
+            '水费': ['out', '水电话房费', 'student_card', ''],
+            '话费': ['out', '水电话房费', 'wechat', ''],
+            '电费': ['out', '水电话房费', 'wechat', ''],
+            '网费': ['out', '水电话房费', 'student_card', ''],
+            '食堂': ['out', '日常餐饮', 'student_card', ''],
+            '生活费': ['in', '生活费', 'wechat', ''],
+            '会员': ['out', '会员套餐', 'wechat', ''],
+            '日用品': ['out', '日用品购买', 'icbc', ''],
+            '零食': ['out', '日常餐饮', 'wechat', ''],
+            '外卖': ['out', '日常餐饮', 'icbc', ''],
+            '补贴': ['in', '研究生补贴', 'icbc', ''],
+        }
+
+        let auto_result_dic = {   // 返回的结果字典
+            'if_detected': 'no',
+            'inout_type': '',
+            'record_type': '',
+            'money_position': '',
+            'money_count': '',
+        }
+
+        for(let name_idx in money_record_name_dic){
+            if(money_record_name.includes(name_idx)){   // 逐个比对，如果比对成功，则退出
+                auto_result_dic['if_detected'] = 'yes';
+                auto_result_dic['inout_type'] = money_record_name_dic[name_idx][0];
+                auto_result_dic['record_type'] = money_record_name_dic[name_idx][1];
+                auto_result_dic['money_position'] = money_record_name_dic[name_idx][2];
+                auto_result_dic['money_count'] = money_record_name_dic[name_idx][3];
+                break;
+            }
+        }
+        return auto_result_dic;
+    }
+</script>

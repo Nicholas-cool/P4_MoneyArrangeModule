@@ -1,0 +1,193 @@
+<!-- Layer05 MoneyHistoryLayer -->
+{% include "common/custome_functions/date_functions.html" %}
+
+<div id="money_history_layer"
+     style="display:none; padding: 10px; line-height: 35px; background-color: #393D49; color: #fff;
+     font-weight: 300; font-size:14px;">
+
+    <div> —— 统计信息 ——</div>
+    <form class="layui-form" action="" style="font-family: 微软雅黑,serif;">
+        <div style="margin-left: 10px; margin-top: 10px; width: 47%; display: inline-block;" class="layui-form-item">
+            <label>位置：</label>
+            <div class="layui-inline">
+                <div class="layui-input-inline" style="width:140%; margin-left: 10px;">
+                    <select lay-verify="required" lay-filter="money_history_layer_money_position_select"
+                            lay-search="" id="money_history_layer_money_position_select">
+                        <option value="all">全部</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div>
+        —— 资金余量折线图 ——
+        <!-- 翻页键 -->
+        <span style="color: #eff; line-height: 20px; font-family: Elephant,serif; position: relative; top: 2px;
+              font-size: 17px; margin-left: 20px;">
+            <span id="money_history_layer_month_span">xxxx-xx</span> 月
+        </span>
+        <button class="layui-btn layui-btn-xs layui-btn-primary" style="color: black; height: 20px; width: 26px;
+        font-family: 黑体,serif; background-color: #E9E9ED; font-weight: bolder; margin-left: 4px; line-height: 20px;"
+                onclick="show_prev_month_history_chart()"> &lt;
+        </button>
+        <button class="layui-btn layui-btn-xs layui-btn-primary" style="color: black; height: 20px; width: 26px;
+        font-family: 黑体,serif; background-color: #E9E9ED; font-weight: bolder; margin-left: 4px; line-height: 20px;"
+                onclick="show_next_month_history_chart()"> &gt;
+        </button>
+    </div>
+    <div id="chart_money_history_line_chart" style="height: 360px; width: 980px; display: inline-block;"></div>
+</div>
+
+<script>
+    function openMoneyHistoryLayer() {
+        refresh_MoneyHistoryLayer();  // 刷新图展示
+        layer.open({
+            type: 1
+            , title: 'Money History'  // 标题栏,false为不显示
+            , area: '1000px;'
+            , shade: 0.8
+            , id: 'LAY_layuipro' // 设定一个id，防止重复弹出
+            , moveType: 0 // 拖拽模式，0或者1
+            , content: $("#money_history_layer")
+            , success: function (layero) {
+            }
+        });
+    }
+
+    // 刷新图展示
+    function refresh_MoneyHistoryLayer() {
+        // 刷新下拉选择框选项
+        $.ajax({
+            url:{% url 'e_get_money_positions' %},
+            type: 'GET',
+            async: false,
+            data: {},
+            success: function (data_dic) {
+                // 清空原有option
+                document.getElementById("money_history_layer_money_position_select").innerHTML =
+                    '<option value="all">全部</option>';
+                // 遍历数据data_dic，逐项添加入select列表
+                $.each(data_dic, function (i, item) {
+                    if (item['hidden'] !== 'all'){
+                        $("#money_history_layer_money_position_select").append(
+                            "<option value= " + i + " >" + item.name + "</option>");
+                    }
+                });
+                layui.form.render('select');  // 刷新select框的加载
+            }
+        })
+
+        let info_temp = get_month_start_end_date();  // 获取本月开始和结束时间
+        document.getElementById('money_history_layer_month_span').innerHTML = info_temp['start'].slice(0, 7);
+        refresh_myChart_history01('given_span', info_temp['start'] + '#' + info_temp['end']);
+    }
+
+    // 监听 money_position 下拉框值变化
+    layui.form.on('select(money_history_layer_money_position_select)', function () {
+        show_current_month_history_chart();
+     });
+
+    // 展示当前月的图像
+    function show_current_month_history_chart() {
+        let now_month_str = document.getElementById('money_history_layer_month_span').innerHTML;
+        let d_temp = new Date(now_month_str);
+
+        d_temp = new Date(d_temp.getFullYear(), d_temp.getMonth() + 1, 1);
+        d_temp.setDate(0);
+        let d_temp_end_str = dateToFormatString_Day(d_temp);
+
+        d_temp.setDate(1);  // 月开始时间
+        let d_temp_start_str = dateToFormatString_Day(d_temp);
+
+        // 刷新标签和图表显示
+        document.getElementById('money_history_layer_month_span').innerHTML = d_temp_start_str.slice(0, 7);
+        refresh_myChart_history01('given_span', d_temp_start_str + '#' + d_temp_end_str);
+    }
+
+    // 按钮回调函数，展示 前一个阶段的 chart
+    function show_prev_month_history_chart() {
+        let now_month_str = document.getElementById('money_history_layer_month_span').innerHTML;
+        let d_temp = new Date(now_month_str);
+
+        d_temp.setDate(0);  // 往前推一月
+        let d_temp_end_str = dateToFormatString_Day(d_temp);
+
+        d_temp.setDate(1);  // 月开始时间
+        let d_temp_start_str = dateToFormatString_Day(d_temp);
+
+        // 刷新标签和图表显示
+        document.getElementById('money_history_layer_month_span').innerHTML = d_temp_start_str.slice(0, 7);
+        refresh_myChart_history01('given_span', d_temp_start_str + '#' + d_temp_end_str);
+    }
+
+    // 按钮回调函数，展示 后一个阶段的 chart
+    function show_next_month_history_chart() {
+        let now_month_str = document.getElementById('money_history_layer_month_span').innerHTML;
+        let d_temp = new Date(now_month_str);
+
+        d_temp = new Date(d_temp.getFullYear(), d_temp.getMonth() + 2, 1);
+        d_temp.setDate(0);
+        let d_temp_end_str = dateToFormatString_Day(d_temp);
+
+        d_temp.setDate(1);  // 月开始时间
+        let d_temp_start_str = dateToFormatString_Day(d_temp);
+
+       // 刷新标签和图表显示
+        document.getElementById('money_history_layer_month_span').innerHTML = d_temp_start_str.slice(0, 7);
+        refresh_myChart_history01('given_span', d_temp_start_str + '#' + d_temp_end_str);
+    }
+</script>
+
+<script>
+    /* ---------------MyChart_history01------------------ */
+    // 基于准备好的dom，初始化echarts实例
+    let myChart_history01 = echarts.init(document.getElementById('chart_money_history_line_chart'), 'dark');
+    // 指定图表的配置项和数据
+    let option_history01 = {
+        backgroundColor: '#393D49',
+        tooltip: {
+            trigger: 'axis',
+            formatter: '<b>{b}（结尾）</b><br>{c}' + '元'
+        },
+        xAxis: {
+            type: 'category',
+            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [
+            {
+                type: 'line',
+                data: [82, 932, 91, 934, 490, 1330, 2210],
+                label: {
+                    show: true,
+                    formatter: '{c}',
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+            },
+        ]
+    };
+    option_history01 && myChart_history01.setOption(option_history01);
+
+    // 更新 myChart_history01 图像
+    function refresh_myChart_history01(time_scale, time_data) {
+        $.ajax({
+            url:{% url 'e_money_get_chart_history01_data' %},
+            async: false,
+            type: 'GET',
+            data: {
+                'time_scale': time_scale,
+                'time_data': time_data,
+                'check_position': $('#money_history_layer_money_position_select').val(),
+            },
+            success: function (chart_data_dic) {
+                option_history01.xAxis.data = chart_data_dic['x_data'];
+                option_history01.series[0].data = chart_data_dic['y_data'];
+                myChart_history01.setOption(option_history01);
+           }
+        })
+    }
+</script>

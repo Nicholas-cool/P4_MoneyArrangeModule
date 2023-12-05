@@ -1,0 +1,141 @@
+<script>
+    // money_position_card 加载
+    function load_money_position_card() {
+        $.ajax({
+            url:{% url 'e_get_money_positions' %},
+            type: 'GET',
+            async: false,
+            data: {},
+            success: function (data_dic) {
+                let all_circulating_money = 0; // 用于计算总计流动金额
+                let all_all_money = 0;         // 用于计算总计金额
+
+                // 清空原有内容
+                document.getElementById('money_position_circulating').innerHTML = '';
+                document.getElementById('money_position_not_circulating').innerHTML = '';
+
+                // 遍历资金位置数据，逐个加入相应位置展示
+                $.each(data_dic, function (i, item) {
+                    if (item['hidden'] === 'no') {  // 如果是hidden的则不显示
+                        if (item['type'] === 'circulating') {
+                            let item_content = '' +
+                                '<div>' + item['name'] + '：' +
+                                '<span id="' + i + '_money" style="position: absolute; right: 20px; ' +
+                                'font-weight: bold;">' + changeTwoDecimal_f(item['money']) + '</span>' +
+                                '</div>' +
+                                '<hr>';
+                            $('#money_position_circulating').append(item_content);
+                            all_circulating_money += parseFloat(item['money']);
+                            all_all_money += parseFloat(item['money']);
+
+                        } else if (item['type'] === 'frozen') {
+                            let item_content = '' +
+                                '<div>' + item['name'] + '：' +
+                                '<span id="' + i + '_money" style="position: absolute; right: 20px; ' +
+                                'font-weight: bold;">' + changeTwoDecimal_f(item['money']) + '</span>' +
+                                '</div>' +
+                                '<hr>';
+                            $('#money_position_not_circulating').append(item_content);
+
+                            all_all_money += parseFloat(item['money']);
+                        } else if (item.type === 'to_be_paid') {
+                            let item_content = '' +
+                                '<div>' + item['name'] + '：' +
+                                '<span id="' + i + '_money" style="position: absolute; right: 20px; ' +
+                                'font-weight: bold;">' + changeTwoDecimal_f(item['money']) +
+                                ' ( +' + changeTwoDecimal_f(parseFloat(item['money']) +
+                                    parseFloat(item['addition_info'])) + ' )' + '</span>' +
+                                '</div>' +
+                                '<hr>';
+                            $('#money_position_not_circulating').append(item_content);
+
+                            all_all_money += parseFloat(item['money']);
+                        }
+                    }
+                });
+
+                document.getElementById('all_circulating_money_span').innerHTML = changeTwoDecimal_f(all_circulating_money);
+                document.getElementById('all_all_money_span').innerHTML = changeTwoDecimal_f(all_all_money);
+            }
+        })
+    }
+
+    window.onload = function (){
+        load_money_position_card();  // 加载 money_position_card
+    }
+</script>
+
+<script>
+    // money_record 数据表格加载
+    let money_record_table;
+    layui.use('table', function () {
+        let table = layui.table;
+        // Layui的表格配置
+        money_record_table = table.render({
+            elem: '#money_record_form',   // 指定容器元素
+            // height: 312,
+            url: '../e_get_money_record_form',  // 数据接口（分页数据）
+            page: true,   // 开启分页
+            limit: 12,
+            limits: [12, 24, 36, 48, 60],
+            cols: [[  // 表头
+                {field: 'id', title: 'ID', width: '8%', sort: true, unresize: true},
+                {field: 'name', title: 'NAME', width: '14%', sort: true, unresize: true},
+                {field: 'date', title: '日期', width: '10%', sort: true, unresize: true},
+                {
+                    field: 'type',
+                    title: '类型',
+                    width: '12%',
+                    unresize: true,
+                    sort: true,
+                    style: 'color: #65A9E4; font-weight: bold;'
+                },
+                {
+                    field: 'inout',
+                    title: '收支',
+                    width: '9%',
+                    sort: true,
+                    unresize: true,
+                    templet: function (d) {
+                        if (d.inout === 'out') {
+                            return '<span style="">支出</span>';
+                        } else if (d.inout === 'in') {
+                            return '<span style="">收入</span>';
+                        } else if (d.inout === 'transfer'){
+                            return '<span style="">转移</span>';
+                        }
+                    }
+                },
+                {
+                    field: 'amount', title: '金额', width: '8%', sort: true, unresize: true,
+                    templet: function (d) {
+                        if (parseFloat(d.amount) < 10) {
+                            return '<span style="color: #B0C4DE; font-weight: bold;">' + d.amount + '</span>';
+                        } else if (parseFloat(d.amount) < 50) {
+                            return '<span style="color: #73ABAD; font-weight: bold;">' + d.amount + '</span>';
+                        } else if (parseFloat(d.amount) < 200) {
+                            return '<span style="color: #CBA32B; font-weight: bold;">' + d.amount + '</span>';
+                        } else if (parseFloat(d.amount) < 1000) {
+                            return '<span style="color: #DDA0DD; font-weight: bold;">' + d.amount + '</span>';
+                        } else {
+                            return '<span style="color: #DB7093; font-weight: bold;">' + d.amount + '</span>';
+                        }
+                    }
+                },
+                {field: 'position', title: '来源', width: '11%', sort: true, unresize: true},
+                {field: 'description', title: '说明', width: '28%', unresize: true},
+            ]]
+        });
+
+        // 表格行单击事件
+        table.on('rowDouble(money_record_form)', function (obj) {
+            // alert(obj.data['id']);  // 得到当前行数据
+
+            if(obj.data['inout'] === 'in' || obj.data['inout'] === 'out'){
+                openAddMoneyRecordLayer_M(obj.data);  // 打开修改资金记录界面
+            } else if(obj.data['inout'] === 'transfer'){
+                openTransferMoneyLayer_M(obj.data); // 打开修改资金转移记录界面
+            }
+        });
+    });
+</script>

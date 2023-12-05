@@ -1,0 +1,257 @@
+<!-- Layer03 MoneyLineChartLayer -->
+{% include "common/custome_functions/date_functions.html" %}
+
+<div id="money_line_chart_layer"
+     style="display:none; padding: 10px; line-height: 35px; background-color: #393D49;
+     color: #fff; font-weight: 300; font-size:14px;">
+    <div id="chart_money_statistics_line_chart"
+         style="height: 360px; width: 980px; display: inline-block; margin-top: 10px;"></div>
+    <div id="chart_money_statistics_related_day_pie_chart"
+         style="height: 260px; width: 480px; display: inline-block;"></div>
+    <div id="chart_money_statistics_related_day_bar_chart"
+         style="height: 260px; width: 480px; display: inline-block;"></div>
+
+    <!-- 翻页键 -->
+    <div style="position: absolute; width: 180px; height: 30px; top: 17px; left: 220px;">
+        <span style="color: #eff; line-height: 20px; font-family: Elephant,serif;
+        position: relative; top: 2px; font-size: 17px;">
+            <span id="money_line_chart_layer_month_span">xxxx-xx</span> 月
+        </span>
+        <button class="layui-btn layui-btn-xs layui-btn-primary" style="color: black;
+            height: 20px; width: 26px; font-family: 黑体,serif; background-color: #E9E9ED;
+            font-weight: bolder; margin-left: 4px; line-height: 20px;"
+            onclick="show_prev_money_statistics_chart()"> &lt;
+        </button>
+        <button class="layui-btn layui-btn-xs layui-btn-primary" style="color: black;
+            height: 20px; width: 26px; font-family: 黑体,serif; background-color: #E9E9ED;
+            font-weight: bolder; margin-left: 4px; line-height: 20px;"
+            onclick="show_next_money_statistics_chart()"> &gt;
+        </button>
+    </div>
+</div>
+
+<script>
+    function openMoneyLineChartLayer() {
+        refresh_MoneyLineChartLayer();  // 刷新图展示
+        layer.open({
+            type: 1
+            , title: 'Money Line Chart'  // 标题栏,false为不显示
+            , area: '1000px;'
+            , shade: 0.8
+            , id: 'LAY_layuipro' // 设定一个id，防止重复弹出
+            , moveType: 0 // 拖拽模式，0或者1
+            , content: $("#money_line_chart_layer")
+            , success: function (layero) {
+            }
+        });
+    }
+
+    // 刷新图展示
+    function refresh_MoneyLineChartLayer() {
+        let info_temp = get_month_start_end_date();  // 获取本月开始和结束时间
+        document.getElementById('money_line_chart_layer_month_span').innerHTML = info_temp['start'].slice(0, 7);
+        refresh_mychart01('given_span', info_temp['start'] + '#' + info_temp['end']);
+        refresh_mychart02(info_temp['start']);
+    }
+
+    // 按钮回调函数，展示 前一个阶段的 chart
+    function show_prev_money_statistics_chart() {
+        let now_month_str = document.getElementById('money_line_chart_layer_month_span').innerHTML;
+        let d_temp = new Date(now_month_str);
+
+        d_temp.setDate(0);  // 往前推一月
+        let d_temp_end_str = dateToFormatString_Day(d_temp);
+
+        d_temp.setDate(1);  // 月开始时间
+        let d_temp_start_str = dateToFormatString_Day(d_temp);
+
+        // 刷新标签和图表显示
+        document.getElementById('money_line_chart_layer_month_span').innerHTML = d_temp_start_str.slice(0, 7);
+        refresh_mychart01('given_span', d_temp_start_str + '#' + d_temp_end_str);
+        refresh_mychart02(d_temp_start_str);
+    }
+
+    // 按钮回调函数，展示 后一个阶段的 chart
+    function show_next_money_statistics_chart() {
+        let now_month_str = document.getElementById('money_line_chart_layer_month_span').innerHTML;
+        let d_temp = new Date(now_month_str);
+
+        d_temp = new Date(d_temp.getFullYear(), d_temp.getMonth() + 2, 1);
+        d_temp.setDate(0);
+        let d_temp_end_str = dateToFormatString_Day(d_temp);
+
+        d_temp.setDate(1);  // 月开始时间
+        let d_temp_start_str = dateToFormatString_Day(d_temp);
+
+       // 刷新标签和图表显示
+        document.getElementById('money_line_chart_layer_month_span').innerHTML = d_temp_start_str.slice(0, 7);
+        refresh_mychart01('given_span', d_temp_start_str + '#' + d_temp_end_str);
+        refresh_mychart02(d_temp_start_str);
+    }
+</script>
+
+<!-- EChart图表渲染 -->
+<script>
+    /* ---------------MyChart01------------------ */
+    // 基于准备好的dom，初始化echarts实例
+    let myChart01 = echarts.init(document.getElementById('chart_money_statistics_line_chart'), 'dark');
+    // 指定图表的配置项和数据
+    let option01 = {
+        backgroundColor: '#393D49',
+        title: {
+            text: '资金统计折线图',
+            left: '6%',
+        },
+        tooltip: {
+            trigger: 'axis',
+            formatter: '<b>{b}</b><br>{c}' + '元（支出）'
+        },
+        xAxis: {
+            type: 'category',
+            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [
+            {
+                type: 'line',
+                data: [82, 932, 91, 934, 490, 1330, 2210],
+                label: {
+                    show: true,
+                    formatter: '{c}',
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+            },
+        ]
+    };
+    myChart01.on('updateAxisPointer', function (event) {
+        const xAxisInfo = event.axesInfo[0];
+        if (xAxisInfo) {
+            // console.log(option01.xAxis.data[xAxisInfo.value]);  // 获取当日日期
+            refresh_mychart02(option01.xAxis.data[xAxisInfo.value]);
+         }
+    });
+    option01 && myChart01.setOption(option01);
+
+    /* ---------------MyChart02------------------ */
+    // 基于准备好的dom，初始化echarts实例
+    let myChart02 = echarts.init(document.getElementById('chart_money_statistics_related_day_pie_chart'), 'dark');
+    // 指定图表的配置项和数据
+    let option02 = {
+        backgroundColor: '#393D49',
+        title: {
+            text: '支出统计饼图（xxxx-xx-xx）',
+            left: '12%',
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: '<b>{b}</b><br/>' + '{c}元 ({d}%)'
+        },
+        series: [
+            {
+                type: 'pie',
+                radius: '75%',
+                center: ['50%', '60%'],
+                data: [
+                    {value: 1048, name: 'Search Engine'},
+                    {value: 735, name: 'Direct'},
+                    {value: 580, name: 'Email'},
+                    {value: 484, name: 'Union Ads'},
+                    {value: 300, name: 'Video Ads'}
+                ],
+                emphasis: {
+                    focus: 'self',
+                }
+            }
+        ]
+    };
+    option02 && myChart02.setOption(option02);
+
+    /* ---------------MyChart02a------------------ */
+    // 基于准备好的dom，初始化echarts实例
+    let myChart02a = echarts.init(document.getElementById('chart_money_statistics_related_day_bar_chart'), 'dark');
+    // 指定图表的配置项和数据
+    let option02a = {
+        backgroundColor: '#393D49',
+        title: {
+            text: '支出统计柱状图（xxxx-xx-xx）',
+            left: '0%',
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: '<b>{b}</b><br/>' + '{c}元'
+        },
+        grid: {  // 设置图的边距
+            x: 100,
+            y: 50,
+            y2: 20
+        },
+        xAxis: {
+            type: 'value',
+        },
+        yAxis: {
+            type: 'category',
+            data: ['Mon', 'Thu', 'Fri', 'Sat', 'Sun']
+        },
+        series: [
+            {
+                type: 'bar',
+                radius: '10%',
+                data: [1048,
+                    {
+                    value: 200,
+                    itemStyle: {
+                        color: '#a90000'
+                    }
+                }, 300, 27, 92],
+                emphasis: {
+                    focus: 'self',
+                }
+            }
+        ]
+    };
+    option02a && myChart02a.setOption(option02a);
+
+    // 更新 mychart01 图像
+    function refresh_mychart01(time_scale, time_data) {
+        $.ajax({
+            url:{% url 'e_money_get_chart01_data' %},
+            async: false,
+            type: 'GET',
+            data: {
+                'time_scale': time_scale,
+                'time_data': time_data,
+            },
+            success: function (chart_data_dic) {
+                option01.xAxis.data = chart_data_dic['x_data'];
+                option01.series[0].data = chart_data_dic['y_data'];
+                myChart01.setOption(option01);
+           }
+        })
+    }
+
+    // 更新 mychart02 图像（含 mychart02a）
+    function refresh_mychart02(date_str) {
+        $.ajax({
+            url:{% url 'e_money_get_chart02_data' %},
+            async: false,
+            type: 'GET',
+            data: {
+                'date_str': date_str,
+            },
+            success: function (chart_data) {
+                option02.series[0].data = chart_data['chart02_data'];
+                option02.title.text = '支出统计饼图（' + date_str + '）';
+                myChart02.setOption(option02);
+
+                option02a.yAxis.data = chart_data['chart02a_data']['yaxis'];
+                option02a.series[0].data = chart_data['chart02a_data']['data'];
+                option02a.title.text = '支出统计柱状图（' + date_str + '）';
+                myChart02a.setOption(option02a);
+           }
+        })
+    }
+</script>

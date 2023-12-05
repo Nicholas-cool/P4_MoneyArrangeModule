@@ -1,0 +1,25 @@
+/* input 框 disabled 时背景色 */
+.layui-input:disabled{
+    background-color: #ccc !important;
+}
+
+/* textarea 框 disabled 时背景色 */
+.layui-textarea:disabled{
+    background-color: #ccc !important;
+}
+
+/* select 框 选项的颜色 */
+.layui-form-select dl dd{
+    color: black;
+}
+
+/* select 框 disabled 时背景色 */
+.layui-select-disabled .layui-disabled{
+    background-color: #ddd;
+ }
+
+/* layui组件 disabled 时文字颜色 */
+.layui-disabled, .layui-disabled:hover{
+    color: black !important;
+ }
+

@@ -1,0 +1,50 @@
+.layui-btn-xs {
+    height: 26px;
+    line-height: 26px;
+    font-size: 14px;
+}
+
+.layui-table-page {
+    background-color: #3D3E40;
+}
+
+.layui-table {
+    background-color: #2B2B2B;
+    color: #cdd;
+}
+
+.layui-table-tips-main,
+.layui-table-grid-down {
+    background-color: #2B2B2B;
+    color: #cdd;
+}
+
+.layui-table-grid-down:hover {
+    background-color: #2B2B2B;
+}
+
+.layui-table-header {
+    background-color: #3D3E40;
+}
+
+.layui-table tbody tr:hover,
+.layui-table thead tr,
+.layui-table-click,
+.layui-table-header,
+.layui-table-hover,
+.layui-table-mend,
+.layui-table-patch,
+.layui-table-tool,
+.layui-table-total,
+.layui-table-total tr,
+.layui-table[lay-even] tr:nth-child(2n) {
+    background-color: #3D3E40;
+}
+
+.layui-table-page .layui-laypage span {
+    color: #eff;
+}
+
+.layui-table-page a {
+    color: #eff;
+}

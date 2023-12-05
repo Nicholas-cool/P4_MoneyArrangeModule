@@ -1,0 +1,20 @@
+<script>
+    // 将浮点数四舍五入，取小数点后2位，不足则补0，返回str格式
+    function changeTwoDecimal_f(x) {
+        let f_x = parseFloat(x);
+
+        f_x = Math.round(f_x * 100) / 100;
+        let s_x = f_x.toString();
+
+        let pos_decimal = s_x.indexOf('.');
+        if (pos_decimal < 0) {
+            pos_decimal = s_x.length;
+            s_x += '.';
+        }
+
+        while (s_x.length <= pos_decimal + 2) {
+            s_x += '0';
+        }
+        return s_x;
+    }
+</script>

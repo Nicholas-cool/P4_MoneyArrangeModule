@@ -1,0 +1,25 @@
+<script>
+    function common_get_select_list(element_id, template_name, desc_value, default_value, default_name){
+        $.ajax({
+            url:{% url 'y_get_select_list' %},
+            type: 'GET',
+            async: false,
+            data: {
+                'template': template_name,
+                'type': 'select',
+                'desc': desc_value,
+            },
+            success: function (data_dic) {
+                // 清空原有 option
+                document.getElementById(element_id).innerHTML =
+                    '<option value="' + default_value + '">' + default_name + '</option>';
+
+                // 遍历数据 data_dic，逐项添加入 select 列表
+                $.each(data_dic, function (i, item) {
+                    $("#" + element_id).append("<option value= " + item + " >" + item + "</option>");
+                });
+            }
+        })
+        layui.form.render('select'); // 刷新layui的select框
+    }
+</script>
