@@ -3,7 +3,7 @@
 
 【愿景介绍视频】https://www.bilibili.com/video/BV1Rc411X7FK
 
-【安装说明视频】待更新
+【安装说明视频】https://www.bilibili.com/video/BV1hQ4y137QG
 
 ## 一、运行环境和配置说明
 
