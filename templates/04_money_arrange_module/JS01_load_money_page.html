@@ -13,6 +13,7 @@
                 // 清空原有内容
                 document.getElementById('money_position_circulating').innerHTML = '';
                 document.getElementById('money_position_not_circulating').innerHTML = '';
+                document.getElementById('money_position_unknown').innerHTML = '';
 
                 // 遍历资金位置数据，逐个加入相应位置展示
                 $.each(data_dic, function (i, item) {
@@ -25,9 +26,9 @@
                                 '</div>' +
                                 '<hr>';
                             $('#money_position_circulating').append(item_content);
+
                             all_circulating_money += parseFloat(item['money']);
                             all_all_money += parseFloat(item['money']);
-
                         } else if (item['type'] === 'frozen') {
                             let item_content = '' +
                                 '<div>' + item['name'] + '：' +
@@ -49,6 +50,16 @@
                                 '<hr>';
                             $('#money_position_not_circulating').append(item_content);
 
+                            all_all_money += parseFloat(item['money']);
+                        } else if (item.type === 'unknown') {
+                             let item_content = '' +
+                                '<div style="background-color: #2b542c; border-radius: 4px;">' + item['name'] + '：' +
+                                '<span id="' + i + '_money" style="position: absolute; right: 20px; ' +
+                                'font-weight: bold;">' + changeTwoDecimal_f(item['money']) + '</span>' +
+                                '</div>' +
+                                '<hr>';
+                            $('#money_position_unknown').append(item_content);
+                            all_circulating_money += parseFloat(item['money']);
                             all_all_money += parseFloat(item['money']);
                         }
                     }
@@ -79,7 +90,14 @@
             limit: 12,
             limits: [12, 24, 36, 48, 60],
             cols: [[  // 表头
-                {field: 'id', title: 'ID', width: '8%', sort: true, unresize: true},
+                {field: 'id', title: 'ID', width: '8%', sort: true, unresize: true,
+                 templet: function (d) {
+                    if (d.status === 'to_be_checked'){
+                        return '<span style="color: #f7a35c; font-weight: bold;">' + d.id + '</span>'
+                    } else {
+                        return '<span style="font-weight: bold;">' + d.id + '</span>'
+                    }
+                 }},
                 {field: 'name', title: 'NAME', width: '14%', sort: true, unresize: true},
                 {field: 'date', title: '日期', width: '10%', sort: true, unresize: true},
                 {
@@ -88,7 +106,13 @@
                     width: '12%',
                     unresize: true,
                     sort: true,
-                    style: 'color: #65A9E4; font-weight: bold;'
+                    templet: function (d) {
+                        if (d.type === '待定') {
+                            return '<span style="color: #f7a35c; font-weight: bold;">待定</span>'
+                        } else {
+                            return '<span style="color: #65A9E4; font-weight: bold;">' + d.type + '</span>'
+                        }
+                    }
                 },
                 {
                     field: 'inout',

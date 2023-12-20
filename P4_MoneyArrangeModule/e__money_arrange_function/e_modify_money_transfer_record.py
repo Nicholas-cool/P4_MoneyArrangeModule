@@ -55,7 +55,8 @@ def e_modify_money_transfer_record(request):
         POSITION = '%s',
         DESCRIPTION = '%s',
         DATE_STR = '%s',
-        FEE = '%s'
+        FEE = '%s',
+        STATUS = 'good'
         WHERE id = '%s';
     """ % (record_name, '转移', record_amount, 'transfer', record_from_position + '&&' + record_to_position,
            record_desc, record_date, record_fee, record_id))

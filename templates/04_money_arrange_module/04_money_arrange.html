@@ -22,6 +22,7 @@
     {% include '04_money_arrange_module/Layer03_MoneyLineChartLayer.html' %}
     {% include '04_money_arrange_module/Layer04_MoneyCategoryChartLayer.html' %}
     {% include '04_money_arrange_module/Layer05_MoneyHistoryLayer.html' %}
+    {% include '04_money_arrange_module/Layer06_UploadMoneyRecordLayer.html' %}
     {% include '04_money_arrange_module/JS01_load_money_page.html' %}
 </head>
 
@@ -38,10 +39,11 @@
         width: 100%; background-color: {{ theme.main_body.bgcolor }}; color: {{ theme.main_body.fontcolor }};">
     <!-- Money Position Card -->
     <div id="money_position_card"
-         style="width: 18%; height: 65%; background-color: #2C3E50; border-radius: 10px; padding: 20px 10px 10px;
+         style="width: 18%; height: 69%; background-color: #2C3E50; border-radius: 10px; padding: 20px 10px 10px;
          margin-left: 1%; margin-top: 1%; border: 2px solid #abb; font-size: 16px; color: #dee; font-family: 华文楷体,serif;
          position: relative; overflow-y: scroll;">
         <div id="money_position_circulating"></div>
+        <div id="money_position_unknown"></div>
         <div style="font-weight: bold; background-color: #cc8014; border-radius: 2px; text-align: center;">
             流动总计：<span id="all_circulating_money_span">NoData</span>
         </div>
@@ -56,7 +58,7 @@
 
     <!-- ToolBar Card -->
     <div id="toolbar_card"
-         style="width: 18%; height: 28%; background-color: #2B2B2B; border-radius: 10px; padding: 10px; padding-top: 20px;
+         style="width: 18%; height: 24%; background-color: #2B2B2B; border-radius: 10px; padding: 10px; padding-top: 20px;
          margin-left: 1%; margin-top: 1%; border: 2px solid #abb; font-size: 16px; color: #dee; font-family: 黑体,serif;
          position: relative;">
         <button type="button" class="layui-btn" style="margin-left: 10%; width: 80%; background-color: #336A9D;"
@@ -78,7 +80,7 @@
         <!-- 数据表格搜索框 -->
         <div style="margin-top: 0; font-family: 黑体,serif;">
             <label style="color: {{ theme.main_top.fontcolor }}; margin-left: 25px;">搜索：</label>
-            <div class="layui-inline" style="width: 41%;">
+            <div class="layui-inline" style="width: 36%;">
                 <input class="layui-input" id="money_record_search_input" autocomplete="off"
                        style="background-color: #eee;">
             </div>
@@ -91,10 +93,14 @@
             <button type="button" class="layui-btn" onclick="search_money_record_form()">Search</button>
             <button type="button" class="layui-btn" style="margin-left:0;" onclick="reload_money_record_form()">Reload
             </button>
-            <button type="button" class="layui-btn" style="margin-left:0;" onclick="openAddMoneyRecordLayer()">Add+
+            <button type="button" class="layui-btn" style="margin-left:0; background-color: #336A9D;"
+                    onclick="openAddMoneyRecordLayer()">Add+
+            </button>
+            <button type="button" class="layui-btn" style="margin-left:0; background-color: #336A9D;"
+                    onclick="openTransferMoneyLayer()">Transfer+
             </button>
             <button type="button" class="layui-btn" style="margin-left:0; background-color: #CC8014;"
-                    onclick="openTransferMoneyLayer()">Transfer+
+                    onclick="openUploadMoneyRecordLayer()">Upload+
             </button>
 
             <!-- 高级检索实现 -->
@@ -109,7 +115,7 @@
                 <label style="color: {{ theme.main_top.fontcolor }}; margin-left: 8px;">收支：</label>
                 <select class="layui-input" id="money_record_search_inout_select" autocomplete="off"
                         onchange="money_record_search_inout_select_change()"
-                        style="background-color: #eee; width: 10%; display: inline-block; margin-left: 0;">
+                        style="background-color: #eee; width: 11%; display: inline-block; margin-left: 0;">
                     <option value="all">全部</option>
                     <option value="out">支出</option>
                     <option value="in">收入</option>
@@ -117,13 +123,13 @@
 
                 <label style="color: {{ theme.main_top.fontcolor }}; margin-left: 8px;">类型：</label>
                 <select class="layui-input" id="money_record_search_category_select" autocomplete="off"
-                        style="background-color: #eee; width: 13%; display: inline-block; margin-left: 0;">
+                        style="background-color: #eee; width: 14%; display: inline-block; margin-left: 0;">
                     <option value="all">全部</option>
                 </select>
 
                 <label style="color: {{ theme.main_top.fontcolor }}; margin-left: 8px;">来源：</label>
                 <select class="layui-input" id="money_record_search_source_select" autocomplete="off"
-                        style="background-color: #eee; width: 13%; display: inline-block; margin-left: 0;">
+                        style="background-color: #eee; width: 14%; display: inline-block; margin-left: 0;">
                     <option value="all">全部</option>
                 </select>
             </div>

@@ -44,7 +44,8 @@ def e_modify_money_record(request):
         INOUT = '%s',
         POSITION = '%s',
         DESCRIPTION = '%s',
-        DATE_STR = '%s'
+        DATE_STR = '%s',
+        STATUS = 'good'
         WHERE id = '%s';
     """ % (record_name, record_type, record_amount, record_inout, record_position,
            record_desc, record_date, record_id))

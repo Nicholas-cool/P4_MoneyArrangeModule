@@ -70,7 +70,7 @@ def e_search_money_record_form(request):
 
     # 查询该记录的信息，返回列表数据
     cur.execute(""" 
-        select ID, NAME, TYPE, AMOUNT, INOUT, POSITION, DESCRIPTION, DATE_STR
+        select ID, NAME, TYPE, AMOUNT, INOUT, POSITION, DESCRIPTION, DATE_STR, STATUS
         FROM money_record ORDER BY ID DESC;
     """)
     all_record = []
@@ -96,6 +96,7 @@ def e_search_money_record_form(request):
                 'position': position_str,
                 'description': line[6],
                 'date': line[7],
+                'status': line[8],
             }
             all_record.append(record_dic)
 

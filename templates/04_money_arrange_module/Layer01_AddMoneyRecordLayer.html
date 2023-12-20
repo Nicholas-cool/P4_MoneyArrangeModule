@@ -9,7 +9,7 @@
             <input type="text" autocomplete="off" id="add_money_record_layer_name" placeholder="请输入资金条目名字"
                    class="layui-input" style="display: inline-block; position:absolute; width: 73%; left:20%;
                     background-color: #eee; z-index: 10;">
-            <button type="button"
+            <button type="button" id="add_money_record_layer_auto_fill_btn"
                     style="position: absolute; width: 7%; left: 93%; font-weight: bold; font-size: 18px;"
                     onclick="auto_fill_money_record()">@</button>
         </div>
@@ -321,6 +321,7 @@
             'add_money_record_layer_money_position_select',
             'add_money_record_layer_amount',
             'add_account_layer_description',
+            'add_money_record_layer_auto_fill_btn',
         ]
         for (let idx in element_id_list) {
             document.getElementById(element_id_list[idx]).disabled = status;
@@ -370,15 +371,8 @@
             success: function (success_info) {
                 alert(success_info);    // 展示成功信息
 
-                // 表格数据重载
-                money_record_table.reload({
-                    url: '../e_get_money_record_form',
-                    where: {  // 设定异步数据接口的额外参数，任意设
-                    }
-                    , page: {
-                        curr: $('.layui-laypage-skip input')[0].value  // 设置留在当前页
-                    }
-                });
+                // 表格数据重载（会自动保存在当前配置）
+                money_record_table.reload({});
 
                 // 刷新 money_position_card
                 load_money_position_card();
@@ -403,15 +397,8 @@
             success: function (success_info) {
                 alert(success_info);    // 展示成功信息
 
-                // 表格数据重载
-                money_record_table.reload({
-                    url: '../e_get_money_record_form',
-                    where: {  // 设定异步数据接口的额外参数，任意设
-                    }
-                    , page: {
-                        curr: $('.layui-laypage-skip input')[0].value  // 设置留在当前页
-                    }
-                });
+                // 表格数据重载（会自动保存在当前配置）
+                money_record_table.reload({});
 
                 // 刷新 money_position_card
                 load_money_position_card();

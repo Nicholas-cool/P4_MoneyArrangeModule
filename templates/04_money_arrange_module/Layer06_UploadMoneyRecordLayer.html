@@ -1,0 +1,235 @@
+<!-- Layer06 UploadMoneyRecordLayer -->
+<div id="upload_money_record_layer"
+     style="display:none; padding: 10px; line-height: 35px; background-color: #393D49; color: #fff;
+     font-weight: 300; font-size:15px; font-family: 黑体,serif;">
+    <form class="layui-form">
+        <div style="width: 47%; margin: 1%; display: inline-block; position: relative;" class="layui-form-item">
+            <label>导入来源：</label>
+            <div class="layui-input-block" style="display: inline-block; position: absolute;
+                left: 18%; width: 78%; margin-left: 0;">
+                <select lay-verify="required" lay-search="" id="upload_money_record_layer_source_select"
+                        lay-filter="upload_money_record_layer_source_select">
+                    <option value="">选择导入来源</option>
+                    <option value="wechat_bill">微信账单</option>
+                    <option value="alipay_bill">支付宝账单</option>
+{#                    <option value="custom_bill">自定义账单</option>#}
+                </select>
+            </div>
+        </div>
+        <div style="width: 47%; margin: 1%; display: inline-block; position: relative;" class="layui-form-item">
+            <label>导入模式：</label>
+            <div class="layui-input-block" style="display: inline-block; position: absolute;
+                left: 18%; width: 78%; margin-left: 0;">
+                <select lay-verify="required" lay-search="" id="upload_money_record_layer_mode_select"
+                        lay-filter="upload_money_record_layer_mode_select">
+{#                    <option value="">选择导入模式</option>#}
+{#                    <option value="detail_mode">逐条模式</option>#}
+                    <option value="repid_mode">快速模式</option>
+                </select>
+            </div>
+        </div>
+        <div style="width: 82%; margin: 1%; display: inline-block; position:relative;" class="layui-form-item">
+            <label>账单文件：</label>
+            <input type="text" id="upload_money_record_layer_file" placeholder="请选择账单文件"
+                   class="layui-input" style="display: inline-block; position:absolute; width: 93%; left:10.3%;
+                   background-color: #eee;" disabled>
+        </div>
+        <button type="button" class="layui-btn" style="margin-left:26px; background-color: #009688;"
+                id="upload_money_record_layer_upload_btn">上传文件</button>
+    </form>
+    <hr>
+    <div id="upload_money_record_preview">
+        <div style="margin-left: 10px;">
+            <div style="display: inline-block; font-size: 18px;">数据预览</div>
+{#            <button type="button" class="layui-btn-sm" style="margin-left:8px; background-color: #009688; border: 0;#}
+{#            display: inline-block; color: #eff; border-radius: 4px;">刷新</button>#}
+        </div>
+        <!--  预览数据表格  -->
+        <div style="width:98%; height: 490px; margin:5px 10px 0; overflow-y: scroll;">
+            <table id="preview_money_record_table" lay-filter="preview_money_record_table" style="width:100%;"></table>
+            <div id="hidden_upload_data_div" style="display: none;">Nodata</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openUploadMoneyRecordLayer() {
+        layer.open({
+            type: 1
+            , title: 'Upload Money Record'  // 标题栏,false为不显示
+            , area: '1100px;'
+            , shade: 0.8
+            , id: 'upload_money_record01' // 设定一个id，防止重复弹出
+            , btn: ['导入', '取消']
+            , btnAlign: 'c'
+            , moveType: 0 // 拖拽模式，0或者1
+            , content: $("#upload_money_record_layer")
+            , yes: function (index, layero){
+                if(do_upload_money_record()){  // 添加数据到数据库
+                    layer.close(index);     // 如果顺利执行，则关闭窗口
+                }
+            }
+            , end: function () {
+                refresh_uploadmoneyrecord_layer();   // 清空该layer信息（防止对主表格产生影响）
+            }
+        });
+        refresh_uploadmoneyrecord_layer();  // 清空原有数据
+    }
+
+    // preview_money_record_form 数据表格加载
+    let preview_money_record_table = layui.table.render({
+        elem: '#preview_money_record_table',   // 指定容器元素
+        // height: 312,
+        data: [],     // 数据内容
+        page: true,   // 开启分页
+        limit: 10,
+        limits: [10, 20, 30, 40, 60],
+        cols: [[  // 表头
+            {field: 'id', title: 'ID', width: '5%', unresize: true, style: 'color: #f7a35c;'},
+            {field: 'name', title: 'NAME', width: '18%', sort: true, unresize: true},
+            {field: 'date', title: '日期', width: '11%', sort: true, unresize: true},
+            {
+                field: 'type',
+                title: '类型',
+                width: '9%',
+                unresize: true,
+                templet: function (d) {
+                    if (d.type === '待定') {
+                        return '<span style="color: #f7a35c; font-weight: bold;">待定</span>'
+                    } else {
+                        return '<span style="color: #65A9E4; font-weight: bold;">' + d.type + '</span>'
+                    }
+                }
+            },
+            {
+                field: 'inout',
+                title: '收支',
+                width: '9%',
+                sort: true,
+                unresize: true,
+                templet: function (d) {
+                    if (d.inout === 'out') {
+                        return '<span style="">支出</span>';
+                    } else if (d.inout === 'in') {
+                        return '<span style="">收入</span>';
+                    } else if (d.inout === 'transfer'){
+                        return '<span style="">转移</span>';
+                    }
+                }
+            },
+            {
+                field: 'amount', title: '金额', width: '8%', sort: true, unresize: true,
+                templet: function (d) {
+                    if (parseFloat(d.amount) < 10) {
+                        return '<span style="color: #B0C4DE; font-weight: bold;">' + d.amount + '</span>';
+                    } else if (parseFloat(d.amount) < 50) {
+                        return '<span style="color: #73ABAD; font-weight: bold;">' + d.amount + '</span>';
+                    } else if (parseFloat(d.amount) < 200) {
+                        return '<span style="color: #CBA32B; font-weight: bold;">' + d.amount + '</span>';
+                    } else if (parseFloat(d.amount) < 1000) {
+                        return '<span style="color: #DDA0DD; font-weight: bold;">' + d.amount + '</span>';
+                    } else {
+                        return '<span style="color: #DB7093; font-weight: bold;">' + d.amount + '</span>';
+                    }
+                }
+            },
+            {field: 'position', title: '来源', width: '10%', sort: true, unresize: true},
+            {field: 'description', title: '说明', width: '30%', unresize: true},
+        ]]
+    });
+
+    // 清空原有数据
+    function refresh_uploadmoneyrecord_layer() {
+        preview_money_record_table.reload({  // 重新加载数据表格（清空数据）
+            data: [],
+        });
+
+        // 清空原有数据
+        let element_select_str = [
+            '#upload_money_record_layer_source_select',
+            '#upload_money_record_layer_mode_select',
+            '#upload_money_record_layer_file',
+        ]
+        for (let idx in element_select_str) {
+            $(element_select_str[idx]).val("");
+        }
+        $('#upload_money_record_layer_mode_select').val("repid_mode");  // 默认使用快速模式
+        layui.form.render('select');  // 刷新select框的加载
+    }
+
+    // 账单文件上传功能
+    layui.upload.render({
+        elem: '#upload_money_record_layer_upload_btn'  // 绑定元素
+        , url: '../e_upload_bill/' // 上传接口
+        , accept: 'file'
+        , acceptMime: 'csv'
+        , data: {
+            'bill_source': '',
+            'upload_mode': '',
+        }
+        , choose: function (obj) {
+            // 预读本地文件
+            obj.preview(function (index, file, result) {
+                $('#upload_money_record_layer_file').val(file.name);
+            });
+        }
+        ,before: function (obj) {
+            this.data.bill_source = $('#upload_money_record_layer_source_select').val();
+            this.data.upload_mode = $('#upload_money_record_layer_mode_select').val();
+        }
+        , done: function (res) {  // 上传完毕回调
+            // alert('good');
+            document.getElementById('hidden_upload_data_div').innerHTML = res['data']['origin_data']; // 存储原始数据
+
+            // 重新加载数据表格
+            preview_money_record_table.reload({
+                data: res['data']['table_data'],
+            });
+        }
+        , error: function () {  // 请求异常回调
+            // alert('error');
+            // 清空数据
+            document.getElementById('hidden_upload_data_div').innerHTML = 'Nodata';
+            preview_money_record_table.reload({ data: [] });
+        }
+    });
+
+    // 执行上传记录，回调函数
+    function do_upload_money_record() {
+        // 获取需要上传的数据
+        let upload_origin_data = document.getElementById('hidden_upload_data_div').innerHTML;
+
+        // 合法性校验
+        if (upload_origin_data === 'Nodata') {
+            alert('数据不正确，请检查或刷新后重新操作！');
+            return false;
+        }
+
+        // ajax实现数据传输
+        $.ajax({
+            url:{% url 'e_upload_money_records' %},
+            type: 'POST',
+            async: false,
+            data: {
+                'upload_origin_data': upload_origin_data,
+            },
+            success: function (success_info) {
+                alert(success_info);    // 展示成功信息
+
+                // 表格数据重载
+                money_record_table.reload({
+                    url: '../e_get_money_record_form',
+                    where: {  // 设定异步数据接口的额外参数，任意设
+                    }
+                    , page: {
+                        curr: '1' // 展示第一页
+                    }
+                });
+
+                // 刷新 money_position_card
+                load_money_position_card();
+            }
+        })
+        return true;  // 上传记录成功
+    }
+</script>

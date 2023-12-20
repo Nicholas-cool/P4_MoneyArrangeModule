@@ -332,15 +332,8 @@
             success: function (success_info) {
                 alert(success_info);    // 展示成功信息
 
-                // 表格数据重载
-                money_record_table.reload({
-                    url: '../e_get_money_record_form',
-                    where: {  // 设定异步数据接口的额外参数，任意设
-                    }
-                    , page: {
-                        curr: $('.layui-laypage-skip input')[0].value
-                    }
-                });
+                // 表格数据重载（会自动保存在当前配置）
+                money_record_table.reload({});
 
                 // 刷新 money_position_card
                 load_money_position_card();
@@ -365,15 +358,8 @@
             success: function (success_info) {
                 alert(success_info);    // 展示成功信息
 
-                // 表格数据重载
-                money_record_table.reload({
-                    url: '../e_get_money_record_form',
-                    where: {  // 设定异步数据接口的额外参数，任意设
-                    }
-                    , page: {
-                        curr: $('.layui-laypage-skip input')[0].value  // 设置留在当前页
-                    }
-                });
+                // 表格数据重载（会自动保存在当前配置）
+                money_record_table.reload({});
 
                 // 刷新 money_position_card
                 load_money_position_card();
