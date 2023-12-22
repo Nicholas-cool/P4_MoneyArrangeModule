@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>资金管理模块-升级功能</title>
+
+    <!-- 导入需要用的插件 -->
+    {% include 'common/head_import.html' %}
+
+    <!-- 导入外部文件 -->
+    <link rel="stylesheet" href="/static/custome_css/layer_style.css">
+    <link rel="stylesheet" href="/static/custome_css/layui_table_style.css">
+    <link rel="stylesheet" href="/static/custome_css/layui_form_style.css">
+</head>
+
+<body>
+<!-- Main Top -->
+<div style="position: absolute; left: 0; top: 0; height: 5%; width: 100%;">
+    <div style="width: 100%; height: 100%; display:inline-block; position: absolute; z-index: 2000;
+            right: 0; top: 0; background-color: {{ theme.main_top.bgcolor }};">
+    </div>
+</div>
+
+<!-- Main Body -->
+<div style="position: absolute; left: 0; top: 5%; height: 95%; font-size: 14px; overflow-y: auto;
+        width: 100%; background-color: {{ theme.main_body.bgcolor }}; color: {{ theme.main_body.fontcolor }};">
+    <div style="margin-top: 20px; margin-left: 10px;">
+        <div style="font-size: 18px; margin: 10px; display: inline-block;">导入旧版数据库：</div>
+        <input class="layui-input" style="display: inline-block; width: 400px;" id="upload_db_ipt" disabled>
+        <button class="layui-btn" style="position: relative; bottom: 2px; margin-left: 10px;"
+                id="upload_db_btn">导入db文件</button>
+        <div style="margin-left: 10px; margin-top: 10px; color: #c13b48; font-weight: bold;">
+            注意：导入旧版数据库，会覆盖当前版本所有数据，请确保当前版本数据库中无有用数据！
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+    // 旧版数据库上传功能
+    layui.upload.render({
+        elem: '#upload_db_btn'   // 绑定元素
+        , url: '../e_upload_db/' // 上传接口
+        , accept: 'file'
+        , acceptMime: 'db'
+        , data: {}
+        , choose: function (obj) {
+            // 预读本地文件
+            obj.preview(function (index, file, result) {
+                $('#upload_db_ipt').val(file.name);
+            });
+        }
+        , done: function (res) {  // 上传完毕回调
+            alert('导入成功！');
+        }
+        , error: function () {    // 请求异常回调
+            alert('导入失败！');
+        }
+    });
+    $('#upload_db_ipt').val('');  // 清空数据显示
+</script>
