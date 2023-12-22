@@ -26,7 +26,7 @@ from .e__money_arrange_function import e_get_money_positions, e_get_money_record
     e_add_money_record, e_add_money_transfer_record, e_money_get_chart01_data, e_money_get_chart02_data, \
     e_money_get_chart03_data, e_money_get_chart_history01_data, e_get_money_record, e_modify_money_record, \
     e_delete_money_record, e_modify_money_transfer_record, e_delete_money_transfer_record, e_upload_bill, \
-    e_upload_money_records
+    e_upload_money_records, e_get_auto_complete_rules
 
 from .y__common_function import y_get_select_list
 
@@ -48,6 +48,7 @@ url_names = [
     ('e_money_get_chart_history01_data', e_money_get_chart_history01_data.e_money_get_chart_history01_data),
     ('e_upload_bill', e_upload_bill.e_upload_bill),
     ('e_upload_money_records', e_upload_money_records.e_upload_money_records),
+    ('e_get_auto_complete_rules', e_get_auto_complete_rules.e_get_auto_complete_rules),
 
     # common部分的函数
     ('y_get_select_list', y_get_select_list.y_get_select_list),

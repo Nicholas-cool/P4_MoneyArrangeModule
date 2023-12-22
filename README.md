@@ -77,23 +77,13 @@
 
 <img src="README.assets/image-20231109183716907.png" alt="image-20231109183716907" style="zoom:80%;" />
 
-### 2.2.3、自动填充定义项
+### 2.2.3、`money_record_auto_complete`表
 
-自动填充的规则定义在`templates/04_money_arrange_module/04_money_record_auto_complete_data.html`文件的`money_record_name_dic`变量中。
+该表定义了添加记录时自动填充功能的规则，可根据需要进行修改。
 
-示例如下。通过记事本打开并添加或修改规则即可。
+> 【注】规则将按照`PRIORITY`从小到大的优先级顺序匹配，不合法的规则将被忽略。
 
-```javascript
-let money_record_name_dic = {  // 自动填充规则字典，靠前的条目优先
-    // 格式：['in（收入）/out（支出）', '类型', '资金位置', '金额']
-    '水费': ['out', '水电话房费', 'student_card', ''],
-    '网费': ['out', '水电话房费', 'student_card', ''],
-    '食堂': ['out', '日常餐饮', 'student_card', ''],
-    '生活费': ['in', '生活费', 'wechat', ''],
-    '日用品': ['out', '日用品购买', 'icbc', ''],
-    '外卖': ['out', '日常餐饮', 'icbc', ''],
-}
-```
+<img src="README.assets/image-20231222104937335.png" alt="image-20231222104937335" style="zoom:85%;" />
 
 ## 三、结语
 
