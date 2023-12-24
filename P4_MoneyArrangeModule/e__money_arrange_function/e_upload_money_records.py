@@ -92,7 +92,7 @@ def e_upload_money_records(request):
     cur.execute(""" select NAME, NAME_EN from money_position; """)
     if 'unknown' not in [_[1] for _ in cur.fetchall()]:
         cur.execute(""" insert into money_position (NAME, NAME_EN, TYPE, MONEY, HIDDEN) 
-                        values (?, ?, ?, ?); """, ('待定', 'unknown', 'unknown', '0.0', 'no'))
+                        values (?, ?, ?, ?, ?); """, ('待定', 'unknown', 'unknown', '0.0', 'no'))
         conn.commit()
 
     cur.execute(""" select DATA from select_list where TEMPLATE = '%s' and DESC = '%s'; 
@@ -113,7 +113,7 @@ def e_upload_money_records(request):
     cur.close()
     conn.close()
 
-    print(upload_origin_data)
+    # print(upload_origin_data)
     for row in reversed(eval(upload_origin_data)):
         if row['C_收支'] == 'transfer':
             if row['A1_源位置'] != 'wechat':

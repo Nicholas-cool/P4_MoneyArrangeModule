@@ -35,11 +35,11 @@
 
 注意在安装的步骤中，选中`Add python to path`选项，该选项会将`python`路径添加到环境变量中。
 
-#### 1.2.3、安装`django`包
+#### 1.2.3、安装`django`包和其他依赖
 
-> 如果已经安装过`django`，可以跳过此步骤。
+> 如果已经安装过`django`和其他依赖（详见`install_process/requirements.txt`），可以跳过此步骤。
 
-如果没有安装过，可以直接双击`install_process/installDjango-3.2.6.bat`脚本进行安装。
+如果没有安装过，可以直接双击`install_process/installDjango-3.2.6.bat`脚本进行`django`的安装；双击`install_process/installPackages.bat`进行其他依赖库包的安装。
 
 也可以自行输入命令安装。
 
