@@ -31,7 +31,7 @@
 
 如果没有安装过，可以直接双击`install_process/python-3.8.7-amd64.exe`文件进行安装。
 
-也可以自行在`python`官网（https://www.python.org/）下载安装包进行安装。
+也可以自行在`python`官网（[https://www.python.org/](https://www.python.org/)）下载安装包进行安装。
 
 注意在安装的步骤中，选中`Add python to path`选项，该选项会将`python`路径添加到环境变量中。
 
@@ -49,7 +49,7 @@
 
 `windows`系统可以直接双击`install_process/SQLiteStudio-3.4.4-windows-x64-installer.exe`安装。
 
-也可以自行在`sqlitestudio`官网（https://sqlitestudio.pl/）下载安装包进行安装。
+也可以自行在`sqlitestudio`官网（[https://sqlitestudio.pl/](https://sqlitestudio.pl/)）下载安装包进行安装。
 
 #### 1.2.5、浏览器
 
