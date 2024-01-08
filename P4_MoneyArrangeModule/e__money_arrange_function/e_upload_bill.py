@@ -89,6 +89,8 @@ def get_df_alipay_new(row, col_name):
             return 'ant_credit_pay'
         elif '工商银行' in str(row['收/付款方式']):
             return 'icbc'
+        elif (row['收/支'] == '收入') and (str(row['收/付款方式']) == 'nan'):
+            return 'alipay'
         else:
             return 'unknown'
     elif col_name == 'F_金额':
@@ -190,7 +192,7 @@ def e_upload_bill(request):
             if '---支付宝' in alipay_line:
                 alipay_content = ''
 
-        print(alipay_content)
+        # print(alipay_content)
         # 转换成dataframe格式，并处理成需要的数据
         df_alipay = pd.read_csv(io.StringIO(alipay_content))
 

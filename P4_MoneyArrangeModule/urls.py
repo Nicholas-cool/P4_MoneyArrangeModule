@@ -59,6 +59,7 @@ urlpatterns = [
     re_path(r'^media/(?P<path>.*)', serve, {"document_root": settings.MEDIA_ROOT}),  # 允许 /media/ 路径访问
     path('favicon.ico', RedirectView.as_view(url=r'static/images/favicon.ico')),  # 网页图标
 
+    path('', views.money_arrange),
     path('04money_arrange/', views.money_arrange),
     path('04money_arrange_update/', views.money_arrange_update),
 ] + [path(url_name+'/', url_view, name=url_name) for url_name, url_view in url_names]

@@ -53,7 +53,9 @@
                             all_all_money += parseFloat(item['money']);
                         } else if (item.type === 'unknown') {
                              let item_content = '' +
-                                '<div style="background-color: #2b542c; border-radius: 4px;">' + item['name'] + '：' +
+                                '<div style="background-color: #2b542c; border-radius: 4px; color: #f7a35c;' +
+                                 'font-weight: bold;">' +
+                                 item['name'] + '：' +
                                 '<span id="' + i + '_money" style="position: absolute; right: 20px; ' +
                                 'font-weight: bold;">' + changeTwoDecimal_f(item['money']) + '</span>' +
                                 '</div>' +
@@ -146,7 +148,20 @@
                         }
                     }
                 },
-                {field: 'position', title: '来源', width: '11%', sort: true, unresize: true},
+                {
+                    field: 'position',
+                    title: '来源',
+                    width: '11%',
+                    sort: true,
+                    unresize: true,
+                    templet: function (d) {
+                        if (d.position.includes('待定')) {
+                            return '<span style="color: #f7a35c;">' + d.position + '</span>'
+                        } else {
+                            return '<span">' + d.position + '</span>'
+                        }
+                     }
+                },
                 {field: 'description', title: '说明', width: '28%', unresize: true},
             ]]
         });
