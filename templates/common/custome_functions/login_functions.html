@@ -1,0 +1,14 @@
+<script>
+    function do_logout(){
+        $.ajax({
+            url:{% url 'logout' %},
+            type: 'GET',
+            async: false,
+            data: {},
+            success: function (data) {
+                alert(data);
+                window.location.href = 'login';
+             }
+        })
+    }
+</script>

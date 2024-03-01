@@ -15,6 +15,7 @@
     {% include 'common/custome_functions/date_functions.html' %}
     {% include 'common/custome_functions/get_select_list_functions.html' %}
     {% include 'common/custome_functions/decimal_functions.html' %}
+    {% include 'common/custome_functions/login_functions.html' %}
 
     {% include '04_money_arrange_module/04_money_record_auto_complete_data.html' %}
     {% include '04_money_arrange_module/Layer01_AddMoneyRecordLayer.html' %}
@@ -31,6 +32,9 @@
 <div style="position: absolute; left: 0; top: 0; height: 5%; width: 100%;">
     <div style="width: 100%; height: 100%; display:inline-block; position: absolute; z-index: 2000;
             right: 0; top: 0; background-color: {{ theme.main_top.bgcolor }};">
+{#        <button class="layui-btn-xs" style="position: absolute; right: 10px; top: 50%;#}
+{#                transform: translateY(-50%); font-family: 'Times New Roman',serif;"#}
+{#                onclick="do_logout()">Logout</button>#}
     </div>
 </div>
 

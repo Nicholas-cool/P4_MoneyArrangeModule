@@ -47,6 +47,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'P4_MoneyArrangeModule.middlewares.login_required.LoginRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'P4_MoneyArrangeModule.urls'
@@ -127,3 +128,6 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = '/login/'   # 这个路径需要根据你网站的实际登陆地址来设置，也就是登录路由
+OPEN_URLS = []          # 允许未登录访问的路由

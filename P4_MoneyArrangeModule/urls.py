@@ -28,7 +28,7 @@ from .e__money_arrange_function import e_get_money_positions, e_get_money_record
     e_delete_money_record, e_modify_money_transfer_record, e_delete_money_transfer_record, e_upload_bill, \
     e_upload_money_records, e_get_auto_complete_rules, e_upload_db
 
-from .y__common_function import y_get_select_list
+from .y__common_function import y_get_select_list, y_login_view
 
 url_names = [
     # 04_money_arrange_module
@@ -58,6 +58,8 @@ url_names = [
 urlpatterns = [
     re_path(r'^media/(?P<path>.*)', serve, {"document_root": settings.MEDIA_ROOT}),  # 允许 /media/ 路径访问
     path('favicon.ico', RedirectView.as_view(url=r'static/images/favicon.ico')),  # 网页图标
+    path('login/', y_login_view.y_login_view, name='login'),  # 登录功能
+    path('logout/', y_login_view.y_logout_view, name='logout'),  # 登出功能
 
     path('', views.money_arrange),
     path('04money_arrange/', views.money_arrange),
