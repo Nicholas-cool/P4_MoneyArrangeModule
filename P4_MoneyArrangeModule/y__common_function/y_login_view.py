@@ -11,7 +11,7 @@ def y_login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            next_url = request.POST.get('next', '/')   # 如果没有next参数，默认重定向到首页
+            next_url = request.POST.get('next', '/04money_arrange/')   # 如果没有next参数，默认重定向到首页
             return redirect(next_url)
         else:
             # 如果认证失败，可以返回一个错误消息
