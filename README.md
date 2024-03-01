@@ -5,6 +5,8 @@
 
 【安装说明视频】https://www.bilibili.com/video/BV1hQ4y137QG
 
+【`Docker`版本】https://hub.docker.com/repository/docker/nicholascool/p4_money_arrange_module/general
+
 【详细文档】更多文档，如`Q&A`、`To_Be_Added`等，详见`wiki`页面。
 
 ## 一、运行环境和配置说明
