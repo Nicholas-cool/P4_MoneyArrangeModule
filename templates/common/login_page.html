@@ -37,7 +37,7 @@
                 {% endfor %}
             </ul>
             {% endif %}
-            <input type="hidden" name="next" value="{{ request.GET.next }}">
+            <input type="hidden" name="next" value="{{ request.GET.next|default:'/' }}">
             <button class="layui-btn" lay-submit lay-filter="login"
                     style="margin-left: 50%; transform: translate(-50%, 0);">登录</button>
         </form>
