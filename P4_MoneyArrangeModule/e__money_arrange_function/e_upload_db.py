@@ -45,6 +45,12 @@ def e_upload_db(request):
         'money_position': ['POSITION_ID', 'NAME', 'NAME_EN', 'MONEY', 'TYPE', 'ADDITION_INFO', 'HIDDEN'],
         'money_record': ['ID', 'NAME', 'TYPE', 'AMOUNT', 'INOUT', 'POSITION', 'DESCRIPTION', 'DATE_STR', 'FEE', 'STATUS']
     }
+    v1_1_3_schema = {
+        'select_list': ['ID', 'TEMPLATE', 'TYPE', 'DESC', 'DATA'],
+        'money_position': ['POSITION_ID', 'NAME', 'NAME_EN', 'MONEY', 'TYPE', 'ADDITION_INFO', 'HIDDEN'],
+        'money_record': ['ID', 'NAME', 'TYPE', 'AMOUNT', 'INOUT', 'POSITION', 'DESCRIPTION', 'DATE_STR', 'FEE', 'STATUS'],
+        'money_record_auto_complete': ['PRIORITY', 'PATTERN', 'INOUT', 'TYPE', 'POSITION', 'AMOUNT'],
+    }
 
     # 2、匹配某一旧版本的数据库，并执行迁移
     if sorted(old_schema.items()) == sorted(v1_0_0_schema.items()):
@@ -100,6 +106,40 @@ def e_upload_db(request):
             cur.execute(""" insert into money_record (ID, NAME, TYPE, AMOUNT, INOUT, POSITION, 
                             DESCRIPTION, DATE_STR, FEE, STATUS) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
                         """, (line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7], line[8], line[9]))
+        conn.commit()
+    elif sorted(old_schema.items()) == sorted(v1_1_3_schema.items()):
+        # 删除现有数据库全部内容
+        cur.execute(""" delete from select_list; """)
+        cur.execute(""" delete from money_position; """)
+        cur.execute(""" delete from money_record; """)
+        cur.execute(""" delete from money_record_auto_complete; """)
+        conn.commit()
+
+        # 逐条导入旧数据库数据
+        cur_tmp.execute(f""" select ID, TEMPLATE, TYPE, DESC, DATA from select_list; """)
+        for line in cur_tmp.fetchall():
+            cur.execute(""" insert into select_list (ID, TEMPLATE, TYPE, DESC, DATA) values (?, ?, ?, ?, ?) 
+                        """, (line[0], line[1], line[2], line[3], line[4]))
+
+        cur_tmp.execute(f""" select POSITION_ID, NAME, NAME_EN, MONEY, TYPE, ADDITION_INFO, HIDDEN 
+                             from money_position; """)
+        for line in cur_tmp.fetchall():
+            cur.execute(""" insert into money_position (POSITION_ID, NAME, NAME_EN, MONEY, TYPE, 
+                            ADDITION_INFO, HIDDEN) values (?, ?, ?, ?, ?, ?, ?) 
+                        """, (line[0], line[1], line[2], line[3], line[4], line[5], line[6]))
+
+        cur_tmp.execute(f""" select ID, NAME, TYPE, AMOUNT, INOUT, POSITION, DESCRIPTION, DATE_STR, FEE, STATUS 
+                             from money_record; """)
+        for line in cur_tmp.fetchall():
+            cur.execute(""" insert into money_record (ID, NAME, TYPE, AMOUNT, INOUT, POSITION, 
+                            DESCRIPTION, DATE_STR, FEE, STATUS) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
+                        """, (line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7], line[8], line[9]))
+            
+        cur_tmp.execute(f""" select PRIORITY, PATTERN, INOUT, TYPE, POSITION, AMOUNT from money_record_auto_complete; """)
+        for line in cur_tmp.fetchall():
+            cur.execute(""" insert into money_record_auto_complete (PRIORITY, PATTERN, INOUT, TYPE, POSITION, AMOUNT) 
+                            values (?, ?, ?, ?, ?, ?) 
+                        """, (line[0], line[1], line[2], line[3], line[4], line[5]))
         conn.commit()
     else:
         cur_tmp.close()
